@@ -1,6 +1,4 @@
-import * as dat from 'dat.gui';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import './style.css';
 
 //Loading
@@ -9,9 +7,6 @@ const textureLoader2 = new THREE.TextureLoader();
 
 const normalTexture = textureLoader.load('/public/NormalMap.png');
 const alphaMap = textureLoader2.load('/public/AlphaMap.jpg');
-
-// Debug
-const gui = new dat.GUI();
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
@@ -23,15 +18,13 @@ const scene = new THREE.Scene();
 const geometry = new THREE.SphereBufferGeometry(1, 64, 64);
 
 // Materials
-
 const material = new THREE.MeshStandardMaterial({
   alphaMap: alphaMap,
+  normalMap: normalTexture,
   transparent: true,
 });
 material.metalness = 0.8;
 material.roughness = 0.35;
-
-material.normalMap = normalTexture;
 
 material.color = new THREE.Color(0xffffff);
 
@@ -82,11 +75,6 @@ camera.position.y = 0;
 camera.position.z = 2;
 scene.add(camera);
 
-// Controls
-console.log(OrbitControls);
-// const controls = new OrbitControls(camera, canvas);
-// controls.enableDamping = true;
-
 /**
  * Renderer
  */
@@ -98,20 +86,48 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
+ * Event listener mouseMove
+ */
+const mouseMoveEvent = (event) => {
+  const maxI = 5;
+  const minI = 2;
+
+  const r = 0.5 + event.clientX * 0.0005;
+  const i = (window.innerHeight - event.clientY) * 0.001 * (maxI - minI + 1) + minI;
+
+  pointLight2.color.setRGB(r, 0, 0);
+  pointLight2.intensity = i;
+};
+
+document.addEventListener('mousemove', mouseMoveEvent);
+/**
+ * Event listener scroll
+ */
+
+const onScroll = (event) => {
+  sphere.position.y = window.scrollY * 0.003;
+  sphere.position.z = window.scrollY * 0.001;
+};
+
+document.addEventListener('scroll', onScroll);
+
+/**
  * Animate
  */
+
+const MOUSE_FACTOR = 0.001;
 
 const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
+  // targetX = mouseX * MOUSE_FACTOR;
+  // targetY = mouseY * MOUSE_FACTOR;
+
   // Update objects
   sphere.rotation.y = 0.6 * elapsedTime;
   sphere.rotation.x = 0.1 * elapsedTime;
-
-  // Update Orbital Controls
-  // controls.update()
 
   // Render
   renderer.render(scene, camera);
