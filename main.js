@@ -26,7 +26,6 @@ const geometry = new THREE.SphereBufferGeometry(1, 64, 64);
 
 const material = new THREE.MeshStandardMaterial({
   alphaMap: alphaMap,
-
   transparent: true,
 });
 material.metalness = 0.8;
