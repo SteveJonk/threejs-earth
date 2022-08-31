@@ -5,7 +5,10 @@ import './style.css';
 
 //Loading
 const textureLoader = new THREE.TextureLoader();
+const textureLoader2 = new THREE.TextureLoader();
+
 const normalTexture = textureLoader.load('/public/NormalMap.png');
+const alphaMap = textureLoader2.load('/public/AlphaMap.jpg');
 
 // Debug
 const gui = new dat.GUI();
@@ -17,13 +20,17 @@ const canvas = document.querySelector('canvas.webgl');
 const scene = new THREE.Scene();
 
 // Objects
-const geometry = new THREE.SphereBufferGeometry(0.5, 64, 64);
+const geometry = new THREE.SphereBufferGeometry(1, 64, 64);
 
 // Materials
 
-const material = new THREE.MeshStandardMaterial();
-material.metalness = 0.7;
-material.roughness = 0.2;
+const material = new THREE.MeshStandardMaterial({
+  alphaMap: alphaMap,
+
+  transparent: true,
+});
+material.metalness = 0.8;
+material.roughness = 0.35;
 
 material.normalMap = normalTexture;
 
@@ -34,14 +41,12 @@ const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
 
 // Lights
-const pointLight = new THREE.PointLight(0xffffff, 1);
-pointLight.position.x = 2;
-pointLight.position.y = 3;
-pointLight.position.z = 4;
+const pointLight = new THREE.AmbientLight(0x404040, 1);
+
 scene.add(pointLight);
 
-const pointLight2 = new THREE.PointLight(0x40b5e7, 0.1);
-pointLight2.position.set(1, 1, 1);
+const pointLight2 = new THREE.PointLight(0xff0000, 0.3);
+pointLight2.position.set(4, 4, 4);
 pointLight2.intensity = 1;
 
 scene.add(pointLight2);
@@ -79,8 +84,9 @@ camera.position.z = 2;
 scene.add(camera);
 
 // Controls
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
+console.log(OrbitControls);
+// const controls = new OrbitControls(camera, canvas);
+// controls.enableDamping = true;
 
 /**
  * Renderer
@@ -102,7 +108,8 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
   // Update objects
-  sphere.rotation.y = 0.5 * elapsedTime;
+  sphere.rotation.y = 0.6 * elapsedTime;
+  sphere.rotation.x = 0.1 * elapsedTime;
 
   // Update Orbital Controls
   // controls.update()
